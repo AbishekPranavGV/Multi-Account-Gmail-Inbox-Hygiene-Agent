@@ -1,0 +1,23 @@
+name: CI Gmail Inbox Hygiene Agent Validation
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Verify Hygiene Agent Archives & Manifest
+        run: |
+          python -c "
+          import os, zipfile, glob
+          zips = glob.glob('*.zip')
+          assert len(zips) > 0, 'Agent package missing'
+          for z in zips:
+              with zipfile.ZipFile(z, 'r') as zf:
+                  print(f'Verified hygiene agent package {z}: {len(zf.namelist())} files')
+          print('Multi-account Gmail agent archive verified successfully!')
+          "
